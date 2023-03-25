@@ -62,7 +62,7 @@ async def switch_servers(ctx):
 
 @bot.command()
 async def hello(ctx):
-    subprocess.run(["bash hello.sh"])
+    subprocess.run(["./hello.sh"])
     await ctx.send("You just said hello in a faraway place.") 
 
 if __name__ == "__main__":
