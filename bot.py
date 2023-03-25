@@ -3,6 +3,7 @@ from discord.ext import commands
 from discord import Intents
 from dotenv import load_dotenv
 from random import choice
+import subprocess
 
 load_dotenv()
 
@@ -10,7 +11,7 @@ TOKEN = getenv("token")
 
 intents = Intents.default()
 intents.message_content = True
-bot = commands.Bot(command_prefix=">",intents=intents)
+bot = commands.Bot(command_prefix="~",intents=intents)
 
 alive_response = [
     "Hail, weary traveler! I am still here, sturdy as a Viking longship in a stormy sea.",
@@ -58,6 +59,11 @@ async def update(ctx):
 @bot.command()
 async def switch_servers(ctx):
     await ctx.send("Switching servers") 
+
+@bot.command()
+async def hello(ctx):
+    subprocess.run(["bash hello.sh"])
+    await ctx.send("You just said hello in a faraway place.") 
 
 if __name__ == "__main__":
 
