@@ -1,10 +1,11 @@
 from os import getenv
+from os import name
 from discord.ext import commands
 from discord import Intents
 from dotenv import load_dotenv
 from random import choice
 import subprocess
-from asyncio import sleep
+from time import time
 
 load_dotenv()
 
@@ -81,6 +82,17 @@ ready = [
     "The way ahead is now unobstructed, and you may continue on your quest with the power of the gods at your side! Hail!",
 ]
 
+on_cooldown = [
+    "By the gods, you are impatient. Give me a minute.",
+    "I can't help you now - I'm reticulating splines.",
+    "I'm on cooldown. Go spam another bot, will you?",
+    "You only need to ask once. It takes a minute to move things through the tubes.",
+    "One moment please. I am having a staring contest with Odin.",
+    "Please wait. I'm a bot, not a god.",
+    "I am working on your previous request. Maybe you should go enjoy some ABBA."
+    "One minute please. Perhaps you would enjoy a hobby while you wait. Maybe brewing?"
+]
+
 server = {
     True: "Anytime",
     False: "Sunday"
@@ -91,13 +103,25 @@ running_answer = {
     False: "stopped"
 }
 
-sleep_time = 60
+sleep_time = 30.0 # seconds
+
+def assert_cooldown():
+    print(bot.last_execution+sleep_time, time())
+    if bot.last_execution+sleep_time <= time():
+        bot.last_execution = time()
+        return True
+    else:
+        return False
 
 @bot.event
 async def on_ready():
-    subprocess.run("../run_anytime_server.sh")
+    if name == "nt":
+        print("Windows only: Running anytime server on ready.")
+    else:
+        subprocess.run("../run_anytime_server.sh")
     bot.current_server = True
     bot.running = True
+    bot.last_execution = time()-sleep_time
 
 @bot.command()
 async def alive(ctx):
@@ -109,38 +133,63 @@ async def status(ctx):
 
 @bot.command()
 async def stop(ctx):
-    await ctx.send(f"{choice(your_will_be_done)}\n\n*I'm stopping the {server[bot.current_server]} server - please wait a minute*.")
-    subprocess.run("../server_stop.sh")
-    await sleep(sleep_time)
+    if assert_cooldown():
+        await ctx.send(f"{choice(your_will_be_done)}\n\n*I'm stopping the {server[bot.current_server]} server - please wait a minute*.")
+        if name == "nt":
+            print("Windows only: Stopping server.")
+        else:
+            subprocess.run("../server_stop.sh")
+    else:
+        await ctx.send()
+
 
 @bot.command()
 async def start(ctx):
-    await ctx.send(f"{choice(your_will_be_done)}\n\n*I'm starting the {server[bot.current_server]} server - please wait a minute*.") 
-    subprocess.run("../server_start.sh")
-    await sleep(sleep_time)
+    if assert_cooldown():
+        await ctx.send(f"{choice(your_will_be_done)}\n\n*I'm starting the {server[bot.current_server]} server - please wait a minute*.") 
+        if name == "nt":
+            print("Windows only: Starting server.")
+        else:
+            subprocess.run("../server_start.sh")
+    else:
+        await ctx.send(choice(on_cooldown))
 
 @bot.command()
 async def update(ctx):
-    await ctx.send(f"{choice(your_will_be_done)}\n\n*I'm updating the server - this takes a little longer. Go get some mead*.")
-    subprocess.run("../server_update.sh")
-    await sleep(6*sleep_time)
-    await ctx.send(choice(ready))
-
+    if assert_cooldown():
+        await ctx.send(f"{choice(your_will_be_done)}\n\n*I'm updating the server - this takes a little longer. Go get some mead*.")
+        if name == "nt":
+            print("Windows only: Updating server.")
+        else:    
+            subprocess.run("../server_update.sh")
+    else:
+        await ctx.send(choice(on_cooldown))
 
 @bot.command()
 async def switch(ctx):
-    await ctx.send(f"{choice(your_will_be_done)}\n\n*I'm switching from the {server[bot.current_server]} to the {server[not bot.current_server]} server - please wait a minute*.")
-    if bot.current_server:
-        subprocess.run("../run_sunday_server.sh")
+    if assert_cooldown():
+        await ctx.send(f"{choice(your_will_be_done)}\n\n*I'm switching from the {server[bot.current_server]} to the {server[not bot.current_server]} server - please wait a minute*.")
+        
+        if bot.current_server:
+            if name == "nt":
+                print("Windows only: Switching to Sunday server.")
+            else:
+                subprocess.run("../run_sunday_server.sh")
+        else:
+            if name == "nt":
+                print("Windows only: Switching to Anytime server.")
+            else:
+                subprocess.run("../run_anytime_server.sh")
+        bot.current_server = not bot.current_server
     else:
-        subprocess.run("../run_anytime_server.sh")
-    bot.current_server = not bot.current_server
-    await sleep(sleep_time)
-    await ctx.send(choice(ready))
+        await ctx.send(choice(on_cooldown))
 
 @bot.command()
 async def hello(ctx):
-    subprocess.run(["../hello.sh"])
+    if name == "nt":
+        print("Windows only: Not really saying hello.")
+    else:
+        subprocess.run(["../hello.sh"])
     await ctx.send("You just said hello in a faraway place.") 
 
 if __name__ == "__main__":
