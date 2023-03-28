@@ -118,7 +118,8 @@ async def on_ready():
     if name == "nt":
         print("Windows only: Running anytime server on ready.")
     else:
-        subprocess.Popen(["./run_anytime_server.sh","&"])
+        pass
+        #subprocess.Popen(["./run_anytime_server.sh","&"])
     bot.current_server = True
     bot.running = True
     bot.last_execution = time()
