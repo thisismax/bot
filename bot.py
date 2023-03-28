@@ -7,12 +7,6 @@ from random import choice
 import subprocess
 from time import time
 
-'''
-Need to fix the scripts so that the bot can run them.
-Maybe make copies?
-
-'''
-
 load_dotenv()
 
 TOKEN = getenv("token")
