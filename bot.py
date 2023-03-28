@@ -10,8 +10,8 @@ from time import time
 load_dotenv()
 
 TOKEN = getenv("token")
-SERVER1 = getenv("server1")
-SERVER2 = getenv("server2")
+SERVER1 = int(getenv("server1"))
+SERVER2 = int(getenv("server2"))
 
 intents = Intents.default()
 intents.message_content = True
