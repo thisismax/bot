@@ -10,6 +10,8 @@ from time import time
 load_dotenv()
 
 TOKEN = getenv("token")
+SERVER1 = getenv("server1")
+SERVER2 = getenv("server2")
 
 intents = Intents.default()
 intents.message_content = True
@@ -115,7 +117,7 @@ def assert_cooldown():
         return False
 
 def confirm_server(id):
-    if id == "689636102553862216":
+    if id == SERVER1 or id == SERVER2:
         return True
     else:
         return False
