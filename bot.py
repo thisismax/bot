@@ -189,7 +189,7 @@ async def hello(ctx):
     if name == "nt":
         print("Windows only: Not really saying hello.")
     else:
-        subprocess.run(["./bot/hello.sh"])
+        subprocess.run(["./hello.sh &"])
     await ctx.send("You just said hello in a faraway place.") 
 
 if __name__ == "__main__":
