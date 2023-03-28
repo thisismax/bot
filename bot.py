@@ -114,8 +114,15 @@ def assert_cooldown():
     else:
         return False
 
+def confirm_server(id):
+    if id == "689636102553862216":
+        return True
+    else:
+        return False
+
 @bot.event
 async def on_ready():
+    
     if name == "nt":
         print("Windows only: Running anytime server on ready.")
     else:
@@ -135,7 +142,7 @@ async def status(ctx):
 
 @bot.command()
 async def stop(ctx):
-    if assert_cooldown():
+    if assert_cooldown() and confirm_server(ctx.guild.id):
         await ctx.send(f"{choice(your_will_be_done)}\n\n*I'm stopping the {server[bot.current_server]} server - please wait a minute*.")
         if name == "nt":
             print("Windows only: Stopping server.")
@@ -148,7 +155,7 @@ async def stop(ctx):
 
 @bot.command()
 async def start(ctx):
-    if assert_cooldown():
+    if assert_cooldown() and confirm_server(ctx.guild.id):
         await ctx.send(f"{choice(your_will_be_done)}\n\n*I'm starting the {server[bot.current_server]} server - please wait a minute*.") 
         if name == "nt":
             print("Windows only: Starting server.")
@@ -160,7 +167,7 @@ async def start(ctx):
 
 @bot.command()
 async def update(ctx):
-    if assert_cooldown():
+    if assert_cooldown() and confirm_server(ctx.guild.id):
         await ctx.send(f"{choice(your_will_be_done)}\n\n*I'm updating the server - this takes a little longer. Go get some mead*.")
         if name == "nt":
             print("Windows only: Updating server.")
@@ -172,7 +179,7 @@ async def update(ctx):
 
 @bot.command()
 async def switch(ctx):
-    if assert_cooldown():
+    if assert_cooldown() and confirm_server(ctx.guild.id):
         await ctx.send(f"{choice(your_will_be_done)}\n\n*I'm switching from the {server[bot.current_server]} to the {server[not bot.current_server]} server - please wait a minute*.")
         
         if bot.current_server:
