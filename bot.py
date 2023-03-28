@@ -89,7 +89,7 @@ on_cooldown = [
     "You only need to ask once. It takes a minute to move things through the tubes.",
     "One moment please. I am having a staring contest with Odin.",
     "Please wait. I'm a bot, not a god.",
-    "I am working on your previous request. Maybe you should go enjoy some ABBA."
+    "I am working on your previous request. Maybe you should go enjoy some ABBA.",
     "One minute please. Perhaps you would enjoy a hobby while you wait. Maybe brewing?"
 ]
 
@@ -106,7 +106,7 @@ running_answer = {
 sleep_time = 30.0 # seconds
 
 def assert_cooldown():
-    print(bot.last_execution+sleep_time, time())
+    #print(bot.last_execution+sleep_time, time())
     if bot.last_execution+sleep_time <= time():
         bot.last_execution = time()
         return True
@@ -140,6 +140,7 @@ async def stop(ctx):
             print("Windows only: Stopping server.")
         else:
             subprocess.Popen(["./server_stop.sh","&"])
+            bot.running = False
     else:
         await ctx.send(choice(on_cooldown))
 
@@ -152,6 +153,7 @@ async def start(ctx):
             print("Windows only: Starting server.")
         else:
             subprocess.Popen(["./server_start.sh","&"])
+            bot.running = True
     else:
         await ctx.send(choice(on_cooldown))
 
@@ -163,6 +165,7 @@ async def update(ctx):
             print("Windows only: Updating server.")
         else:    
             subprocess.Popen(["./server_update.sh","&"])
+            bot.running = True
     else:
         await ctx.send(choice(on_cooldown))
 
@@ -182,6 +185,7 @@ async def switch(ctx):
             else:
                 subprocess.Popen(["./run_anytime_server.sh","&"])
         bot.current_server = not bot.current_server
+        bot.running = True
     else:
         await ctx.send(choice(on_cooldown))
 
