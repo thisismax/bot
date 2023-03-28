@@ -91,6 +91,7 @@ on_cooldown = [
     "Please wait. I'm a bot, not a god.",
     "I am working on your previous request. Maybe you should go enjoy some ABBA.",
     "One minute please. Perhaps you would enjoy a hobby while you wait. Maybe brewing?"
+    "I can't help you now - I'm reticulating antlers.",
 ]
 
 server = {
