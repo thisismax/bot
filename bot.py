@@ -121,7 +121,7 @@ async def on_ready():
         subprocess.run(["./run_anytime_server.sh","&"])
     bot.current_server = True
     bot.running = True
-    bot.last_execution = time()-sleep_time
+    bot.last_execution = time()
 
 @bot.command()
 async def alive(ctx):
