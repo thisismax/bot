@@ -118,7 +118,7 @@ async def on_ready():
     if name == "nt":
         print("Windows only: Running anytime server on ready.")
     else:
-        subprocess.run("./run_anytime_server.sh","&")
+        subprocess.run(["./run_anytime_server.sh","&"])
     bot.current_server = True
     bot.running = True
     bot.last_execution = time()-sleep_time
@@ -138,7 +138,7 @@ async def stop(ctx):
         if name == "nt":
             print("Windows only: Stopping server.")
         else:
-            subprocess.run("./server_stop.sh","&")
+            subprocess.run(["./server_stop.sh","&"])
     else:
         await ctx.send(choice(on_cooldown))
 
@@ -150,7 +150,7 @@ async def start(ctx):
         if name == "nt":
             print("Windows only: Starting server.")
         else:
-            subprocess.run("./server_start.sh","&")
+            subprocess.run(["./server_start.sh","&"])
     else:
         await ctx.send(choice(on_cooldown))
 
@@ -161,7 +161,7 @@ async def update(ctx):
         if name == "nt":
             print("Windows only: Updating server.")
         else:    
-            subprocess.run("./server_update.sh","&")
+            subprocess.run(["./server_update.sh","&"])
     else:
         await ctx.send(choice(on_cooldown))
 
@@ -174,12 +174,12 @@ async def switch(ctx):
             if name == "nt":
                 print("Windows only: Switching to Sunday server.")
             else:
-                subprocess.run("./run_sunday_server.sh","&")
+                subprocess.run(["./run_sunday_server.sh","&"])
         else:
             if name == "nt":
                 print("Windows only: Switching to Anytime server.")
             else:
-                subprocess.run("./run_anytime_server.sh","&")
+                subprocess.run(["./run_anytime_server.sh","&"])
         bot.current_server = not bot.current_server
     else:
         await ctx.send(choice(on_cooldown))
