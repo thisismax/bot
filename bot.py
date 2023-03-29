@@ -106,12 +106,12 @@ running_answer = {
     False: "stopped"
 }
 
-sleep_time = 30.0 # seconds
+#sleep_time = 30.0 # seconds
 
-def assert_cooldown():
+def assert_cooldown(wait_time = 30.0):
     #print(bot.last_execution+sleep_time, time())
-    if bot.last_execution+sleep_time <= time():
-        bot.last_execution = time()
+    if bot.off_cooldown <= time():
+        bot.off_cooldown = time()+wait_time
         return True
     else:
         return False
@@ -124,23 +124,22 @@ def confirm_server(id):
 
 @bot.event
 async def on_ready():
-    
-    if name == "nt":
-        print("Windows only: Running anytime server on ready.")
-    else:
-        pass
-        #subprocess.Popen(["./run_anytime_server.sh","&"])
     bot.current_server = True
     bot.running = True
-    bot.last_execution = time()-sleep_time
+    #bot.last_execution = time()-sleep_time
+    bot.off_cooldown = time()
 
 @bot.command()
 async def alive(ctx):
-    await ctx.send(choice(alive_response))    
+    if name == "nt":
+        await ctx.send("I am currently running in my test environment and can't change the actual server.")
+    else:
+        await ctx.send(choice(alive_response))    
 
 @bot.command()
 async def status(ctx):
     await ctx.send(f"The {server[bot.current_server]} server is selected, mortal. And I think it's {running_answer[bot.running]}. I'm pretty dumb though - I can't tell if that's right for sure. You'll have to try logging in to make sure.")
+    await cts.send(f"Also I'm on cooldown for {(bot.off_cooldown-time())/60:.2f} minutes because someone asked me to do something.")
 
 @bot.command()
 async def stop(ctx):
@@ -152,7 +151,7 @@ async def stop(ctx):
             subprocess.Popen(["./server_stop.sh","&"])
             bot.running = False
     else:
-        await ctx.send(choice(on_cooldown))
+        await ctx.send(f"{choice(on_cooldown)}\n\nCooldown has {(bot.off_cooldown-time())/60:.2f} minutes left.")
 
 
 @bot.command()
@@ -165,11 +164,11 @@ async def start(ctx):
             subprocess.Popen(["./server_start.sh","&"])
             bot.running = True
     else:
-        await ctx.send(choice(on_cooldown))
+        await ctx.send(f"{choice(on_cooldown)}\n\nCooldown has {(bot.off_cooldown-time())/60:.2f} minutes left.")
 
 @bot.command()
 async def update(ctx):
-    if assert_cooldown() and confirm_server(ctx.guild.id):
+    if assert_cooldown(60*6.0) and confirm_server(ctx.guild.id):
         await ctx.send(f"{choice(your_will_be_done)}\n\n*I'm updating the server - this takes a little longer. Go get some mead*.")
         if name == "nt":
             print("Windows only: Updating server.")
@@ -177,7 +176,7 @@ async def update(ctx):
             subprocess.Popen(["./server_update.sh","&"])
             bot.running = True
     else:
-        await ctx.send(choice(on_cooldown))
+        await ctx.send(f"{choice(on_cooldown)}\n\nCooldown has {(bot.off_cooldown-time())/60:.2f} minutes left.")
 
 @bot.command()
 async def switch(ctx):
@@ -197,7 +196,7 @@ async def switch(ctx):
         bot.current_server = not bot.current_server
         bot.running = True
     else:
-        await ctx.send(choice(on_cooldown))
+        await ctx.send(f"{choice(on_cooldown)}\n\nCooldown has {(bot.off_cooldown-time())/60:.2f} minutes left.")
 
 @bot.command()
 async def hello(ctx):
