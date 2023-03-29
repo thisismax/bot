@@ -139,7 +139,7 @@ async def alive(ctx):
 @bot.command()
 async def status(ctx):
     await ctx.send(f"The {server[bot.current_server]} server is selected, mortal. And I think it's {running_answer[bot.running]}. I'm pretty dumb though - I can't tell if that's right for sure. You'll have to try logging in to make sure.")
-    await cts.send(f"Also I'm on cooldown for {(bot.off_cooldown-time())/60:.2f} minutes because someone asked me to do something.")
+    #await ctx.send(f"Also I'm on cooldown for {(bot.off_cooldown-time())/60:.2f} minutes because someone asked me to do something.")
 
 @bot.command()
 async def stop(ctx):
