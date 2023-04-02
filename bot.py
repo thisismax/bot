@@ -13,10 +13,6 @@ TOKEN = getenv("token")
 SERVER1 = int(getenv("server1"))
 SERVER2 = int(getenv("server2"))
 
-intents = Intents.default()
-intents.message_content = True
-bot = commands.Bot(command_prefix="~",intents=intents)
-
 alive_response = [
     "Hail, weary traveler! I am still here, sturdy as a Viking longship in a stormy sea.",
     "Aye, I am still here! Wouldst thou like me to regale thee with a tale of my latest conquest?",
@@ -35,7 +31,7 @@ alive_response = [
     "By the beard of Thor, I am still here! Though sometimes I wonder if my responses are as witty as a Viking bard's songs.",
     "Aye, I am still here, my good mortal! Though I do apologize if my Norse puns are a bit too cheesy for thy taste.",
     "Yes, I am still here, mortal! Though sometimes I feel as if I am a fish out of water, trying to learn the ways of the Vikings.",
-    "Fear not, dear traveler! Eikthyr, mightiest of bots, is still here, ready to assist thee in thy quest for knowledge. Just beware of the occasional typo, for even a Viking can make mistakes."
+    "Fear not, dear traveler! Eikthyr, mightiest of bots, is still here, ready to assist thee in thy quest for knowledge. Just beware of the occasional typo, for even a Viking can make mistakes.",
 ]
 
 your_will_be_done = [
@@ -92,9 +88,13 @@ on_cooldown = [
     "One moment please. I am having a staring contest with Odin.",
     "Please wait. I'm a bot, not a god.",
     "I am working on your previous request. Maybe you should go enjoy some ABBA.",
-    "One minute please. Perhaps you would enjoy a hobby while you wait. Maybe brewing?"
+    "One minute please. Perhaps you would enjoy a hobby while you wait. Maybe brewing?",
     "I can't help you now - I'm reticulating antlers.",
 ]
+
+intents = Intents.default()
+intents.message_content = True
+bot = commands.Bot(command_prefix="~",intents=intents)
 
 server = {
     True: "Anytime",
@@ -106,99 +106,120 @@ running_answer = {
     False: "stopped"
 }
 
-#sleep_time = 30.0 # seconds
 
-def assert_cooldown(wait_time = 30.0):
-    #print(bot.last_execution+sleep_time, time())
+async def assert_cooldown(ctx, wait_time = 30.0) -> bool:
+    
     if bot.off_cooldown <= time():
         bot.off_cooldown = time()+wait_time
         return True
     else:
+        if wait_time > 0:
+            await ctx.send(f"{choice(on_cooldown)}")
+        await ctx.send(f"Cooldown has {(bot.off_cooldown-time())/60:.2f} minutes left.")
         return False
 
-def confirm_server(id):
-    if id == SERVER1 or id == SERVER2:
+
+async def confirm_server(ctx) -> bool:
+    if ctx.guild.id == SERVER1 or ctx.guild.id == SERVER2:
         return True
     else:
+        await ctx.send(f"You are not on an authorized server.")
         return False
+
 
 @bot.event
 async def on_ready():
     bot.current_server = True
     bot.running = True
-    #bot.last_execution = time()-sleep_time
     bot.off_cooldown = time()
 
+
 @bot.command()
+async def eikthyr(ctx,arg=None):
+
+    if await confirm_server(ctx):
+        if arg == "status":
+            await status(ctx)
+        elif arg == "hello":
+            await hello()
+        elif arg == "stop":
+            await stop(ctx)
+        elif arg == "start":
+            await start(ctx)
+        elif arg == "update":
+            await update(ctx)
+        elif arg == "switch":
+            await switch(ctx)
+        else:
+            await alive(ctx)
+        
+
+
 async def alive(ctx):
     if name == "nt":
         await ctx.send("I am currently running in my test environment and can't change the actual server.")
     else:
         await ctx.send(choice(alive_response))    
 
-@bot.command()
+
 async def status(ctx):
     await ctx.send(f"The {server[bot.current_server]} server is selected, mortal. And I think it's {running_answer[bot.running]}. I'm pretty dumb though - I can't tell if that's right for sure. You'll have to try logging in to make sure.")
-    #await ctx.send(f"Also I'm on cooldown for {(bot.off_cooldown-time())/60:.2f} minutes because someone asked me to do something.")
+    await assert_cooldown(ctx,0)
 
-@bot.command()
+
 async def stop(ctx):
-    if assert_cooldown() and confirm_server(ctx.guild.id):
-        await ctx.send(f"{choice(your_will_be_done)}\n\n*I'm stopping the {server[bot.current_server]} server - please wait a minute*.")
-        if name == "nt":
-            print("Windows only: Stopping server.")
-        else:
-            subprocess.Popen(["./server_stop.sh","&"])
+    if bot.running == True:
+        if await assert_cooldown(ctx,20.0):
+            await ctx.send(f"{choice(your_will_be_done)}\n\n*I'm stopping the {server[bot.current_server]} server - please wait a minute*.")
+            if name == "nt":
+                print("Windows only: Stopping server.")
+            else:
+                subprocess.Popen(["./server_stop.sh","&"])
             bot.running = False
     else:
-        await ctx.send(f"{choice(on_cooldown)}\n\nCooldown has {(bot.off_cooldown-time())/60:.2f} minutes left.")
+        await ctx.send("The server is already stopped.")
 
 
-@bot.command()
 async def start(ctx):
-    if assert_cooldown() and confirm_server(ctx.guild.id):
-        await ctx.send(f"{choice(your_will_be_done)}\n\n*I'm starting the {server[bot.current_server]} server - please wait a minute*.") 
-        if name == "nt":
-            print("Windows only: Starting server.")
-        else:
-            subprocess.Popen(["./server_start.sh","&"])
+    if bot.running == False:
+        if await assert_cooldown(ctx,40.0):
+            await ctx.send(f"{choice(your_will_be_done)}\n\n*I'm starting the {server[bot.current_server]} server - please wait a minute*.") 
+            if name == "nt":
+                print("Windows only: Starting server.")
+            else:
+                subprocess.Popen(["./server_start.sh","&"])
             bot.running = True
     else:
-        await ctx.send(f"{choice(on_cooldown)}\n\nCooldown has {(bot.off_cooldown-time())/60:.2f} minutes left.")
+        await ctx.send("The server is already running.")
 
-@bot.command()
+
 async def update(ctx):
-    if assert_cooldown(60*6.0) and confirm_server(ctx.guild.id):
+    if await assert_cooldown(ctx,600.0): # longer cooldown for updates
         await ctx.send(f"{choice(your_will_be_done)}\n\n*I'm updating the server - this takes a little longer. Go get some mead*.")
         if name == "nt":
             print("Windows only: Updating server.")
         else:    
             subprocess.Popen(["./server_update.sh","&"])
-            bot.running = True
-    else:
-        await ctx.send(f"{choice(on_cooldown)}\n\nCooldown has {(bot.off_cooldown-time())/60:.2f} minutes left.")
+        bot.running = True
 
-@bot.command()
+
 async def switch(ctx):
-    if assert_cooldown() and confirm_server(ctx.guild.id):
+    if await assert_cooldown(ctx,60.0): # slightly longer cooldown for server switch
+
         await ctx.send(f"{choice(your_will_be_done)}\n\n*I'm switching from the {server[bot.current_server]} to the {server[not bot.current_server]} server - please wait a minute*.")
         
-        if bot.current_server:
-            if name == "nt":
-                print("Windows only: Switching to Sunday server.")
-            else:
-                subprocess.Popen(["./run_sunday_server.sh","&"])
+        if name == "nt":
+            print("Windows only: Switching to Sunday server.")
         else:
-            if name == "nt":
-                print("Windows only: Switching to Anytime server.")
+            if bot.current_server:
+                subprocess.Popen(["./run_sunday_server.sh","&"])
             else:
                 subprocess.Popen(["./run_anytime_server.sh","&"])
+
         bot.current_server = not bot.current_server
         bot.running = True
-    else:
-        await ctx.send(f"{choice(on_cooldown)}\n\nCooldown has {(bot.off_cooldown-time())/60:.2f} minutes left.")
 
-@bot.command()
+
 async def hello(ctx):
     if name == "nt":
         print("Windows only: Not really saying hello.")
