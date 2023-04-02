@@ -169,7 +169,7 @@ async def status(ctx):
 
 async def stop(ctx):
     if bot.running == True:
-        if await assert_cooldown(ctx,20.0):
+        if await assert_cooldown(ctx,40.0):
             await ctx.send(f"{choice(your_will_be_done)}\n\n*I'm stopping the {server[bot.current_server]} server - please wait a minute*.")
             if name == "nt":
                 print("Windows only: Stopping server.")
@@ -182,7 +182,7 @@ async def stop(ctx):
 
 async def start(ctx):
     if bot.running == False:
-        if await assert_cooldown(ctx,40.0):
+        if await assert_cooldown(ctx,60.0):
             await ctx.send(f"{choice(your_will_be_done)}\n\n*I'm starting the {server[bot.current_server]} server - please wait a minute*.") 
             if name == "nt":
                 print("Windows only: Starting server.")
@@ -194,7 +194,7 @@ async def start(ctx):
 
 
 async def update(ctx):
-    if await assert_cooldown(ctx,600.0): # longer cooldown for updates
+    if await assert_cooldown(ctx,720.0): # longer cooldown for updates
         await ctx.send(f"{choice(your_will_be_done)}\n\n*I'm updating the server - this takes a little longer. Go get some mead*.")
         if name == "nt":
             print("Windows only: Updating server.")
@@ -204,7 +204,7 @@ async def update(ctx):
 
 
 async def switch(ctx):
-    if await assert_cooldown(ctx,60.0): # slightly longer cooldown for server switch
+    if await assert_cooldown(ctx,100.0): # slightly longer cooldown for server switch
 
         await ctx.send(f"{choice(your_will_be_done)}\n\n*I'm switching from the {server[bot.current_server]} to the {server[not bot.current_server]} server - please wait a minute*.")
         
