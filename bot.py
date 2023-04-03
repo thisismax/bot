@@ -1,7 +1,7 @@
 from os import getenv
 from os import name
 from discord.ext import commands
-from discord import Intents
+from discord import Intents,Embed
 from dotenv import load_dotenv
 from random import choice
 import subprocess
@@ -14,24 +14,24 @@ SERVER1 = int(getenv("server1"))
 SERVER2 = int(getenv("server2"))
 
 alive_response = [
-    "Hail, weary traveler! I am still here, sturdy as a Viking longship in a stormy sea.",
+    "Hail, weary traveler! I, Eikthyr, the Lord of Winter's Fury, whose very breath freezes the blood of his enemies and whose icy touch can shatter even the mightiest of swords, am still here.",
     "Aye, I am still here! Wouldst thou like me to regale thee with a tale of my latest conquest?",
     "By Thor's mighty hammer, I am indeed still here! What brings thee back to my shores?",
     "Verily, I have not left! Why dost thou ask? Art thou afraid I have sailed off to pillage thy village?",
     "Yes, I am still here! Though I must admit, I was momentarily distracted by a flock of seagulls chasing a shoal of herring.",
     "Of course, I am still here! Wouldst thou like to join me in a rousing game of Viking chess?",
     "Yea, I am still here, my friend! Though I fear my beard may have grown longer since last we spoke.",
-    "Indeed, I am still here, like a steadfast shieldmaiden guarding her clan's stronghold.",
+    "Indeed, I, Eikthyr, the Infernal Reindeer, whose eyes glow with the fires of Helheim and whose hooves leave a trail of flames in his wake, am still here, like a steadfast shieldmaiden guarding her clan's stronghold.",
     "By Odin's wisdom, I have not departed! Why dost thou doubt my presence, mortal?",
     "Aye, I am still here! And I shall remain here until Ragnarok, when the world shall end in a fiery conflagration!",
     "Ha-ha! Yes, I am still here, as solid as a piece of smoked salmon on a Viking's plate. Does my robotic nature offend thee?",
-    "Do not fret, dear mortal! Eikthyr the Vikingbot is still here, ready to answer any questions ye may have. Unless thou art asking for the location of my hidden treasure...",
+    "Do not fret, dear mortal! Eikthyr, the Fermented Fury, whose rage is tempered only by the sour taste of pickled herring and rye bread is still here, ready to answer any questions ye may have.",
     "Yea, I am still here, my friend! Though I must confess, I am but a humble language model, not a true Viking warrior.",
     "Verily, I am still here! And I shall remain here until the end of time, or until someone unplugs my power source.",
     "By the beard of Thor, I am still here! Though sometimes I wonder if my responses are as witty as a Viking bard's songs.",
     "Aye, I am still here, my good mortal! Though I do apologize if my Norse puns are a bit too cheesy for thy taste.",
     "Yes, I am still here, mortal! Though sometimes I feel as if I am a fish out of water, trying to learn the ways of the Vikings.",
-    "Fear not, dear traveler! Eikthyr, mightiest of bots, is still here, ready to assist thee in thy quest for knowledge. Just beware of the occasional typo, for even a Viking can make mistakes.",
+    "Fear not, dear traveler! Eikthyr, the Smørbrød Slayer, whose mastery of the open-faced sandwich is unmatched in all the land, and whose creations are a work of art is still here, ready to assist thee in thy quest for knowledge.",
 ]
 
 your_will_be_done = [
@@ -92,9 +92,29 @@ on_cooldown = [
     "I can't help you now - I'm reticulating antlers.",
 ]
 
+help_text = [
+    "Hail mortal! What troubles you? Fear not, for I am here to offer my aid and guidance.",
+    "Odin himself has sent me to aid you in your time of need. I am Eikthyr, the Frostborn Deity, born of ice and snow, whose heart burns with the fires of Muspelheim, and I stand ready to assist you in any way that I can.",
+    "Skål, mortal! As a viking god, I know the ways of the Scandinavian world like the back of my hand. Allow me to use my knowledge to help you with whatever task you need.",
+    "The cold winds of the north carry my voice to you, mortal. Do not fear, for Eikthyr, the Raging Stormbringer, whose hooves thunder like the drums of Thor and whose fury is unmatched in all the nine realms, is here to offer you their aid and wisdom.",
+    "Behold, mortal! As a viking god of the reindeer, I have traversed the icy landscapes of Scandinavia and tasted the rich flavors of its cuisine. Allow me to put my knowledge to good use by helping you in your time of need.",
+    "In the land of the north, we viking gods hold honor above all else. It is with honor that I stand before you, Eikthyr, the Horned Herald of Ragnarok, whose coming signals the end of all things and whose power will usher in a new era of chaos and destruction, to offer my assistance in whatever way I can.",
+    "Mortal, do not be afraid. Eikthyr, the Northern Beast, whose fur is as black as the night sky and whose eyes burn with the cold fury of the blizzard, is here to lend you their strength and guidance. Together, we shall overcome any obstacle that lies before us.",
+    "The fjords of Norway and the forests of Sweden hold no secrets from me, mortal. As the greatest reindeer warrior of Valhalla, I have traveled far and wide, and I stand ready to help you in any way that I can.",
+    "With the power of Thor coursing through my veins, I, Eikthyr, the Antlers of Yggdrasil, whose strength is matched only by their determination, and whose wrath is the stuff of legend, am here to assist you. Let us join forces and face whatever challenges come our way.",
+    "Mortal, you stand before a viking god of great renown. Fear not, for Eikthyr, whose hide is forged from the heart of a dying star and whose hooves bear the emblem of Yggdrasil, is here to offer their wisdom and strength. Let us work together to overcome any obstacles that may arise.",
+]
+
+prefix = "~"
+cooldowns = {
+    "stop": 40.0,
+    "start": 60.0,
+    "switch": 100.0,
+    "update": 720.0
+}
 intents = Intents.default()
 intents.message_content = True
-bot = commands.Bot(command_prefix="~",intents=intents)
+bot = commands.Bot(command_prefix=prefix,intents=intents,help_command=None)
 
 server = {
     True: "Anytime",
@@ -134,7 +154,9 @@ async def on_ready():
     bot.off_cooldown = time()
 
 
-@bot.command()
+@bot.command(
+
+    )
 async def eikthyr(ctx,arg=None):
 
     if await confirm_server(ctx):
@@ -150,9 +172,26 @@ async def eikthyr(ctx,arg=None):
             await update(ctx)
         elif arg == "switch":
             await switch(ctx)
-        else:
+        elif arg == "alive":
             await alive(ctx)
-        
+        else:
+            await help(ctx)
+
+
+async def help(ctx):
+    help=f"""
+*{choice(help_text)}*\n
+Call me using '{prefix}eikthyr [command]' to instruct the Reindeer God of SnackMountain.\n
+Note that Eikthyr is extremely stupid and doesn't actually know the real status of the server - he's just good at guessing.\n
+Also note that Eikthyr has cooldowns for operations which occupy the server. Asking them to start, stop, update, or switch servers will activate a cooldown on the bot.\n
+**Status** - gives the status of the Valheim server. Tells which server is selected (*Sunday* or *Anytime*) and whether it is running.\n
+**Stop** - stops the Valheim server. Cooldown: {cooldowns["stop"]} seconds\n
+**Start** - starts the Valheim server. Cooldown: {cooldowns["start"]} seconds\n
+**Switch** - switches between the two servers (*Sunday* or *Anytime*). Cooldown: {cooldowns["switch"]} seconds\n
+**Update** - stops the server, checks for updates and starts again. Cooldown: {cooldowns["update"]} seconds\n
+"""
+    
+    await ctx.send(help)
 
 
 async def alive(ctx):
@@ -169,7 +208,7 @@ async def status(ctx):
 
 async def stop(ctx):
     if bot.running == True:
-        if await assert_cooldown(ctx,40.0):
+        if await assert_cooldown(ctx,cooldowns["stop"]):
             await ctx.send(f"{choice(your_will_be_done)}\n\n*I'm stopping the {server[bot.current_server]} server - please wait a minute*.")
             if name == "nt":
                 print("Windows only: Stopping server.")
@@ -182,7 +221,7 @@ async def stop(ctx):
 
 async def start(ctx):
     if bot.running == False:
-        if await assert_cooldown(ctx,60.0):
+        if await assert_cooldown(ctx,cooldowns["start"]):
             await ctx.send(f"{choice(your_will_be_done)}\n\n*I'm starting the {server[bot.current_server]} server - please wait a minute*.") 
             if name == "nt":
                 print("Windows only: Starting server.")
@@ -194,7 +233,7 @@ async def start(ctx):
 
 
 async def update(ctx):
-    if await assert_cooldown(ctx,720.0): # longer cooldown for updates
+    if await assert_cooldown(ctx,cooldowns["update"]): # longer cooldown for updates
         await ctx.send(f"{choice(your_will_be_done)}\n\n*I'm updating the server - this takes a little longer. Go get some mead*.")
         if name == "nt":
             print("Windows only: Updating server.")
@@ -204,7 +243,7 @@ async def update(ctx):
 
 
 async def switch(ctx):
-    if await assert_cooldown(ctx,100.0): # slightly longer cooldown for server switch
+    if await assert_cooldown(ctx,cooldowns["switch"]): # slightly longer cooldown for server switch
 
         await ctx.send(f"{choice(your_will_be_done)}\n\n*I'm switching from the {server[bot.current_server]} to the {server[not bot.current_server]} server - please wait a minute*.")
         
