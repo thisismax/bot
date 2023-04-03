@@ -180,7 +180,7 @@ async def eikthyr(ctx,arg=None):
 
 async def help(ctx):
     help=f"""
-*{choice(help_text)}*\n
+*{choice(help_text+alive_response)}*\n
 Call me using '{prefix}eikthyr [command]' to instruct the Reindeer God of SnackMountain.\n
 Note that Eikthyr is extremely stupid and doesn't actually know the real status of the server - he's just good at guessing.\n
 Also note that Eikthyr has cooldowns for operations which occupy the server. Asking them to start, stop, update, or switch servers will activate a cooldown on the bot.\n
