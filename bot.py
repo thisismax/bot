@@ -202,7 +202,7 @@ async def alive(ctx):
 
 
 async def status(ctx):
-    await ctx.send(f"The {server[bot.current_server]} server is selected, mortal. And I think it's {running_answer[bot.running]}. I'm pretty dumb though - I can't tell if that's right for sure. You'll have to try logging in to make sure.")
+    await ctx.send(f"The {server[bot.current_server]} server is selected, mortal. And I think it's {running_answer[bot.running]}. I'm pretty dumb though - I can't tell if that's right. You'll have to try logging in to make sure.")
     await assert_cooldown(ctx,0)
 
 
